@@ -156,10 +156,10 @@ async def download_from_terabox(client, message, url, platform):
                 file_size = int(response.headers.get('content-length', 0))
                 current_size = 0
                 start_time = time.time()
-                metadata = extractMetadata(createParser(video_filename))
-                if metadata is not None:
-                    if metadata.has("duration"):
-                        duration = metadata.get("duration").seconds
+                #metadata = extractMetadata(createParser(video_filename))
+                #if metadata is not None:
+                   # if metadata.has("duration"):
+                  #      duration = metadata.get("duration").seconds
 
                 with open(video_filename, "wb") as file:
                    for chunk in response.iter_content(chunk_size=128):  # Save in chunks
