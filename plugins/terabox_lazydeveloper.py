@@ -11,12 +11,14 @@ from plugins.utitles import Mdata01
 from lazydeveloper.thumbnal import extract_thumbnail
 from lazydeveloper.ffmpeg import take_screen_shot, fix_thumb
 import random
-
+from config import *
 from pyrogram import enums
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
 
 from urllib.parse import urlparse
+sticker_set = ("CAACAgUAAxkBAAEVrQVnaVjyi7aC6Uzm2hroGb4u832GqwACWAcAAln00VUhdUzK3V0cvDYE CAACAgIAAxkBAAEVrR1naVxRD_oDzi5HekutpX2v1tIlqwAC4wUAAj-VzArYM62l0j-1NDYE CAACAgIAAxkBAAEVrTVnaWP1Fro-Q4gxV4mFRioJbhDX6gACrA0AAuJ8CEocdg_Chn4uTzYE CAACAgIAAxkBAAEVrTdnaWQMR7rnojwn53eOpkM_-Hb8SwACnQ4AAhgmQEguU6H7fNBriTYE CAACAgIAAxkBAAEVrTlnaWQgksf4dBUQae9V4urU7muZUwACZQ0AAulzQEj7mSnMOJpDMTYE CAACAgIAAxkBAAEVrT1naWQ0tB8d6_jv18xEkDvzQTe7fAACtg8AAmvTQEhGlrVX_UMWpDYE CAACAgIAAxkBAAEVrUFnaWRdgff0EQABzFLDVVkOI7tTNMYAAh8RAAKUIAlKz5TAFyAt3Qk2BA CAACAgIAAxkBAAEVrUNnaWRvH8S2p7tOAz6Zb2WKfQvWKgACEwwAAuLLQEgKFkvFN8GyMjYE CAACAgIAAxkBAAEVrUVnaWSBAWVWpmUckS2TEzPhXAr9ggACdQwAAvIBQUiWfrY76Av8aTYE CAACAgIAAxkBAAEVrUdnaWSSjjN433lIpjulonJCMsnyHAACeQwAAqGuQEjW9dENyNgsjDYE CAACAgIAAxkBAAEVrUlnaWSuvK33pJHV2Ao36v2tkPWzdgACWw0AAi8FQUhX8JOWWFWgEzYE CAACAgIAAxkBAAEVrUtnaWS_zaZv7kZrpXdSMWucwfemRwACLQ8AAiQRQUhlbbUC1Bt3HDYE CAACAgIAAxkBAAEVrU1naWTQGZ5D8vGyLwHBjxCzZBMpFQACAgsAAshkSUi_XVq9k7CVPzYE CAACAgIAAxkBAAEVrU9naWTjuM7LkFgX_8jIkigGZAAByQAD9gwAAk3XQEgYd1HmQDgEkDYE CAACAgIAAxkBAAEVrVFnaWTxRGw9xFeGwnRplqeSK5oCEwACBhAAAkAnQUh4teLKJ4bbojYE CAACAgIAAxkBAAEVrVVnaWUMLUvPYXjtBC8zjUtksHoUmQACLQ0AAqxWQUgMdsTbI544PjYE CAACAgIAAxkBAAEVrVdnaWUfxDoxsMDheWwpS-gTfXsM8gACtgwAAqqLQUgSw1FxjYwyvTYE CAACAgIAAxkBAAEVrVlnaWUzkw1ia3CEI4Bc1h8YTCeVLwACGQ8AAgWCQEjWQ4L7-Mn90zYE CAACAgIAAxkBAAEVrVtnaWVIot0sGPvUAz__gh0UNAtVDwACQREAAgNOCUp9w1-UJunSCTYE CAACAgIAAxkBAAEVrV1naWVZPz2Ksyl6CIrrTUEj3aKdJQACewwAAstzAUoR5G-nya3XVjYE CAACAgIAAxkBAAEVrV9naWWsRNY6IHpRRXzdnnLUcATDBwAC8A4AAp3MCEphNwfqbKoeLTYE CAACAgIAAxkBAAEVrTVnaWP1Fro-Q4gxV4mFRioJbhDX6gACrA0AAuJ8CEocdg_Chn4uTzYE CAACAgIAAxkBAAEVrWVnaWXRyrYxWiGz5dN8xkvFBug6sgACxg4AApXLQEqNb_xqmLajBDYE CAACAgIAAxkBAAEVrWlnaWYoll5RfYtgJgtfsRFw7qqneAACBAEAAladvQreBNF6Zmb3bDYE CAACAgIAAxkBAAEVrW1naWZID5jRvKJgWgkwhtR65XRF_QAC6AoAAu6g8Ui8gw9lugYjxTYE")
+lazysticker = sticker_set.split()
 
 def extract_short_url(url):
     """
@@ -60,15 +62,16 @@ async def new_progress_for_pyrogram(current, total, message, start_time):
 
 import aiohttp
 
-async def download_file(url, dest_path):
+async def download_file(url, dest_path, current_size, file_size, start_time, progress_message2, filename):
     chunk_size = 5 * 1024 * 1024  # 1 MB
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             with open(dest_path, 'wb') as file:
                 while chunk := await response.content.read(chunk_size):
                     file.write(chunk)
-                    # await new_progress_for_pyrogram(current_size, file_size, msg, start_time)
-  
+                    current_size += len(chunk)
+                    await progress_for_pyrogram(current_size, file_size, "<blockquote>♻ ᴜᴘʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ ᴛᴏ sᴇʀᴠᴇʀ</blockquote>\n<blockquote><code>{filename}</code></blockquote>", progress_message2, start_time)
+
 
 
 async def download_from_terabox(client, message, url, platform):
@@ -84,12 +87,20 @@ async def download_from_terabox(client, message, url, platform):
     # -------------------------------------
     short_url = extract_short_url(url)
     print(f"Extracted Short URL: {short_url}")
+    
+    try:
+        response = requests.get(f"https://terabox.hnn.workers.dev/api/get-info?shorturl={short_url}")
+        response.raise_for_status()
+        data = response.json()
+        print(data)
+    except requests.exceptions.HTTPError as http_err:
+        if response.status_code == 429:
+            await progress_message2.edit(f"Hey, {message.from_user.mention} ! We are temporarily rate limited (<b>server down 😢</b>). Check back later once traffic has gone down... \n<b><u>⏳MAX-WAIT-TIME : 5 Hours</u></b>\n<blockquote><b>Powered by @LazyDeveloperr<b></blockquote>")
+            await message.reply_sticker("CAACAgIAAxkBAAEVrSNnaV06VH29ak8TEcli6IL7AAHQNO8AAgwBAAJWnb0Kqm_10kDc4j02BA")
+            return
+    except Exception as lazydeveloepr:
+        print(lazydeveloepr)
 
-    # Step 1: Fetch file info
-    response = requests.get(f"https://terabox.hnn.workers.dev/api/get-info?shorturl={short_url}")
-    response.raise_for_status()
-    data = response.json()
-    print(data)
     if data.get("ok") and "list" in data and len(data["list"]) > 0:
         video_info = data["list"][0]
         video_title = video_info.get("filename", "Untitled Video")
@@ -113,12 +124,14 @@ async def download_from_terabox(client, message, url, platform):
 
         # Notify user with file details
         file_info_message = (
-            f"**Video Title:** {video_title}\n"
-            f"**File Size:** {file_size}\n\n"
-            "Starting download..."
+            f"<blockquote><b>🎉ᴜʀʟ ꜰᴇᴛᴄʜᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ🎊</b></blockquote>\n"
+            f"<blockquote><b>🎥ᴠɪᴅᴇᴏ ᴛɪᴛʟᴇ::</b> {video_title}\n"
+            f"<b>🧵ꜰɪʟᴇ ꜱɪᴢᴇ:</b> {file_size}</blockquote>\n"
+            "<blockquote>👆👇</blockquote>\n"
+            "<blockquote><b><u><i>⏳ᴛʀʏɪɴɢ ᴛᴏ ꜰᴇᴛᴄʜ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ...</i></u></b></blockquote>"
         )
         await progress_message2.edit_text(file_info_message)
-        await asyncio.sleep(1)
+        load_link_stick = await message.reply_sticker("CAACAgUAAxkBAAEVrQtnaVkmz__5DuSrlPdFl1TkhI8bCgACKwADvJY1KvfgJFBaB4jENgQ")
         
         # api
         api_url = "https://terabox.hnn.workers.dev/api/get-download"
@@ -141,70 +154,50 @@ async def download_from_terabox(client, message, url, platform):
             # Send POST Request
             response = requests.post(api_url, json=payload, headers=headers)
             response.raise_for_status()  # Raise an error for HTTP codes 4xx/5xx
-
             # Parse JSON Response
             data = response.json()
             if data.get("ok"):
+                await load_link_stick.delete()
+                # await asyncio.sleep(1)
                 download_link = data["downloadLink"]
-                print(f"Download Link: {download_link}")
+                await progress_message2.edit(f"<blockquote><b>🎉 ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ... </b></blockquote>\n<blockquote>🎯: {download_link} </blockquote>")
+                got_stick = await message.reply_sticker("CAACAgUAAxkBAAEVrSdnaV-YAAHTHFqUohHpJp6TQbF5ghoAAiwAA7yWNSr8WI87aGngHjYE")
 
                 # 
-                response = requests.get(download_link, stream=True)
-                response.raise_for_status()
+                # response = requests.get(download_link, stream=True)
+                # response.raise_for_status()
                 video_filename = os.path.join(destination_folder, video_title)  # Define the path to save the file
                 # 
-                file_size = int(response.headers.get('content-length', 0))
+                # file_size = int(response.headers.get('content-length', 0))
                 current_size = 0
                 start_time = time.time()
-                #metadata = extractMetadata(createParser(video_filename))
-                #if metadata is not None:
-                   # if metadata.has("duration"):
-                  #      duration = metadata.get("duration").seconds
-
-                with open(video_filename, "wb") as file:
-                   for chunk in response.iter_content(chunk_size=128):  # Save in chunks
-                       file.write(chunk)
-                       current_size += len(chunk)
-                       await progress_for_pyrogram(current_size, file_size, "Uploading file to server", progress_message2, start_time)
+               
+                # with open(video_filename, "wb") as file:
+                #    for chunk in response.iter_content(chunk_size=128):  # Save in chunks
+                #        file.write(chunk)
+                #        current_size += len(chunk)
+                #        await progress_for_pyrogram(current_size, file_size, "Uploading file to server", progress_message2, start_time)
+                await asyncio.sleep(1)
+                await got_stick.delete()
+                uploding_stick = await message.reply_sticker("CAACAgUAAxkBAAEVrQdnaVkVUQllH2VoGMkUgtEKgcf_qAACKQADvJY1KhDT2MoRzkuCNgQ")
+                await download_file(download_link, video_filename, current_size, file_size, start_time, progress_message2)
+                await uploding_stick.delete()
                 
-                # await download_file(download_link, video_filename)
-            
-                # return download_link, video_title
                 
-                # Step 3: Upload the video to Telegram
+                download_stick = await message.reply_sticker(lazysticker)
                 #======================================
-                bot_username = client.username if client.username else "👩‍💻Powered By LazyDeveloper"
-                caption_lazy = f"ᴡɪᴛʜ ❤ @{bot_username}"
+                bot_username = client.username if client.username else "👩‍💻ᴘᴏᴡᴇʀᴇᴅ ʙʏ ʟᴀᴢʏᴅᴇᴠᴇʟᴏᴘᴇʀ"
+                caption_lazy = f"ᴡɪᴛʜ❤@{bot_username}"
                 caption = video_title if video_title else "===========🍟==========="
                 while len(caption) + len(caption_lazy) > 1024:
                     caption = caption[:-1]  # Trim caption if it's too long
+                log_cap = f'<b><a href="{url}">{video_title}</a>'
                 caption = f'<b><a href="{url}">{video_title}</a>\n\n<blockquote>{caption_lazy}</blockquote></b>'
  
                 #====================================== 
                 xlx = await progress_message2.edit_text("⚡ ᴘʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ꜰɪʟᴇ ᴛᴏ ᴜᴘʟᴏᴀᴅ ᴏɴ ᴛᴇʟᴇɢʀᴀᴍ...")
                 start_time = time.time()
-                # sent_video = await client.send_video(
-                #     message.from_user.id,  # The recipient ID (or channel)
-                #     video_filename,  # Path to the video on your server
-                #     caption=f"Here is your video: {video_title}",  # Video caption
-                #     parse_mode=enums.ParseMode.HTML  # Optional: Parse mode for HTML
-                # )
-                # 
-                # Define paths
-                # thumb_option = None
-                # try:
-                #     thumbnail_path = os.path.join(destination_folder, "thumbnail.jpg")
 
-                #     # Extract or generate thumbnail
-                #     thumbnail_result = extract_thumbnail(video_filename, thumbnail_path)
-
-                #     # Send video with thumbnail (if available)
-                #     thumb_option = thumbnail_result if thumbnail_result and os.path.exists(thumbnail_result) else None
-                # except Exception as e:
-                #     print(e)
-                #     pass
-                # if thumb_option is not None:
-                #     thumb = thumb_option
                 width, height, duration = await Mdata01(video_filename)
                 print(f"w-{width}===>h-{height}===>d-{duration}")
                 try:
@@ -226,7 +219,7 @@ async def download_from_terabox(client, message, url, platform):
                     supports_streaming=True,
                     progress=progress_for_pyrogram,
                     progress_args=(
-                        f"<blockquote>🍟ᴜᴘʟᴏᴀᴅing ʏᴏᴜʀ ᴠɪᴅᴇᴏ... 📤</blockquote>============x============<blockquote><code>{caption}</code></blockquote>",
+                        f"<blockquote>🍟ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ ᴛᴏ ᴛᴇʟᴇɢʀᴀᴍ.</blockquote>\n<blockquote>📽<code>{caption}</code></blockquote>",
                         xlx,
                         start_time,
                     )
@@ -235,10 +228,36 @@ async def download_from_terabox(client, message, url, platform):
                 # -----------------------------------
                 # -----------------------------------
                 await xlx.delete()
-                sticker_message = await message.reply_sticker("CAACAgIAAxkBAAEZdwRmJhCNfFRnXwR_lVKU1L9F3qzbtAAC4gUAAj-VzApzZV-v3phk4DQE")
-                os.remove(video_filename)
-                await asyncio.sleep(5)
+                await download_stick.delete()
+                sticker_message = await message.reply_sticker("CAACAgUAAxkBAAEVrQlnaVkcs_0t3ERo7U25A0YdCaY2oQACKgADvJY1KsIyiYK2RJbrNgQ")
+                if succ:
+                    # Send the video to the log channel with details
+                    caption = (
+                            f"<b>📂 ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ꜰᴏʀ ᴜsᴇʀ... ❤</b>"
+                            f"<blockquote><b>📽{log_cap}</b></blockquote>\n"
+                            f"<blockquote>👤 <b>ᴜsᴇʀ ɪᴅ:</b> <code>{message.from_user.id}</code></blockquote>\n"
+                            f"<blockquote>📩 <b>ɴᴀᴍᴇ:</b> {message.from_user.mention}</blockquote>\n"
+                            f"<blockquote>🔗 <b>ᴜʀʟ:</b> {url}</blockquote>\n"
+                            "💘\n"
+                            f"<blockquote><b>🦋 ᴘᴏᴡᴇʀᴇᴅ ʙʏ <a href='https://t.me/LazyDeveloperr'> ʟᴀᴢʏᴅᴇᴠᴇʟᴏᴘᴇʀ </a></b></blockquote>"
+                        )
+                    await client.copy_message(
+                                chat_id=LOG_CHANNEL,
+                                from_chat_id=message.chat.id,
+                                message_id=succ.id,
+                                caption=caption,
+                                parse_mode=enums.ParseMode.HTML
+                            )
+                await asyncio.sleep(1)
                 await sticker_message.delete()
+
+                final_stick = await message.reply_sticker(lazysticker)
+                if os.path.exists(video_filename):
+                    os.remove(video_filename)
+                if os.path.exists(ph_path):
+                    os.remove(ph_path)
+                await asyncio.sleep(5)
+                await final_stick.delete()
             else:
                 print(f"API Error: {data.get('message')}")
                 return 
@@ -246,10 +265,6 @@ async def download_from_terabox(client, message, url, platform):
         except requests.exceptions.RequestException as e:
             print(f"Request Error: {e}")
             return
-    # -------------------------------------
-    # -------------------------------------
-    # -------------------------------------
-    # -------------------------------------
 
 
 
