@@ -184,10 +184,10 @@ async def download_from_terabox(client, message, url, platform):
                 #        file.write(chunk)
                 #        current_size += len(chunk)
                 #        await progress_for_pyrogram(current_size, file_size, "Uploading file to server", progress_message2, start_time)
-                await asyncio.sleep(1)
+                await asyncio.sleep(2)
                 await got_stick.delete()
                 uploding_stick = await message.reply_sticker("CAACAgUAAxkBAAEVrQdnaVkVUQllH2VoGMkUgtEKgcf_qAACKQADvJY1KhDT2MoRzkuCNgQ")
-                await download_file(download_link, video_filename, current_size, file_size, start_time, progress_message2, video_title)
+                await download_file(download_link, video_filename, current_size, video_size, start_time, progress_message2, video_title)
                 await uploding_stick.delete()
                 
                 
