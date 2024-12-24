@@ -160,7 +160,8 @@ async def download_from_terabox(client, message, url, platform):
                 await load_link_stick.delete()
                 # await asyncio.sleep(1)
                 download_link = data["downloadLink"]
-                await progress_message2.edit(f"<blockquote><b>🎉 ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ... </b></blockquote>\n<blockquote>🎯: {download_link} </blockquote>")
+                shortlink = download_link[:200]
+                await progress_message2.edit(f"<blockquote><b>🎉 ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ... </b></blockquote>\n<blockquote>🎯: {shortlink}... 🥂 </blockquote>")
                 got_stick = await message.reply_sticker("CAACAgUAAxkBAAEVrSdnaV-YAAHTHFqUohHpJp6TQbF5ghoAAiwAA7yWNSr8WI87aGngHjYE")
 
                 # 
