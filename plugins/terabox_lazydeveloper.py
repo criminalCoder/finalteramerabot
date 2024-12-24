@@ -19,7 +19,7 @@ from hachoir.metadata import extractMetadata
 from urllib.parse import urlparse
 sticker_set = ("CAACAgUAAxkBAAEVrQVnaVjyi7aC6Uzm2hroGb4u832GqwACWAcAAln00VUhdUzK3V0cvDYE CAACAgIAAxkBAAEVrR1naVxRD_oDzi5HekutpX2v1tIlqwAC4wUAAj-VzArYM62l0j-1NDYE CAACAgIAAxkBAAEVrTVnaWP1Fro-Q4gxV4mFRioJbhDX6gACrA0AAuJ8CEocdg_Chn4uTzYE CAACAgIAAxkBAAEVrTdnaWQMR7rnojwn53eOpkM_-Hb8SwACnQ4AAhgmQEguU6H7fNBriTYE CAACAgIAAxkBAAEVrTlnaWQgksf4dBUQae9V4urU7muZUwACZQ0AAulzQEj7mSnMOJpDMTYE CAACAgIAAxkBAAEVrT1naWQ0tB8d6_jv18xEkDvzQTe7fAACtg8AAmvTQEhGlrVX_UMWpDYE CAACAgIAAxkBAAEVrUFnaWRdgff0EQABzFLDVVkOI7tTNMYAAh8RAAKUIAlKz5TAFyAt3Qk2BA CAACAgIAAxkBAAEVrUNnaWRvH8S2p7tOAz6Zb2WKfQvWKgACEwwAAuLLQEgKFkvFN8GyMjYE CAACAgIAAxkBAAEVrUVnaWSBAWVWpmUckS2TEzPhXAr9ggACdQwAAvIBQUiWfrY76Av8aTYE CAACAgIAAxkBAAEVrUdnaWSSjjN433lIpjulonJCMsnyHAACeQwAAqGuQEjW9dENyNgsjDYE CAACAgIAAxkBAAEVrUlnaWSuvK33pJHV2Ao36v2tkPWzdgACWw0AAi8FQUhX8JOWWFWgEzYE CAACAgIAAxkBAAEVrUtnaWS_zaZv7kZrpXdSMWucwfemRwACLQ8AAiQRQUhlbbUC1Bt3HDYE CAACAgIAAxkBAAEVrU1naWTQGZ5D8vGyLwHBjxCzZBMpFQACAgsAAshkSUi_XVq9k7CVPzYE CAACAgIAAxkBAAEVrU9naWTjuM7LkFgX_8jIkigGZAAByQAD9gwAAk3XQEgYd1HmQDgEkDYE CAACAgIAAxkBAAEVrVFnaWTxRGw9xFeGwnRplqeSK5oCEwACBhAAAkAnQUh4teLKJ4bbojYE CAACAgIAAxkBAAEVrVVnaWUMLUvPYXjtBC8zjUtksHoUmQACLQ0AAqxWQUgMdsTbI544PjYE CAACAgIAAxkBAAEVrVdnaWUfxDoxsMDheWwpS-gTfXsM8gACtgwAAqqLQUgSw1FxjYwyvTYE CAACAgIAAxkBAAEVrVlnaWUzkw1ia3CEI4Bc1h8YTCeVLwACGQ8AAgWCQEjWQ4L7-Mn90zYE CAACAgIAAxkBAAEVrVtnaWVIot0sGPvUAz__gh0UNAtVDwACQREAAgNOCUp9w1-UJunSCTYE CAACAgIAAxkBAAEVrV1naWVZPz2Ksyl6CIrrTUEj3aKdJQACewwAAstzAUoR5G-nya3XVjYE CAACAgIAAxkBAAEVrV9naWWsRNY6IHpRRXzdnnLUcATDBwAC8A4AAp3MCEphNwfqbKoeLTYE CAACAgIAAxkBAAEVrTVnaWP1Fro-Q4gxV4mFRioJbhDX6gACrA0AAuJ8CEocdg_Chn4uTzYE CAACAgIAAxkBAAEVrWVnaWXRyrYxWiGz5dN8xkvFBug6sgACxg4AApXLQEqNb_xqmLajBDYE CAACAgIAAxkBAAEVrWlnaWYoll5RfYtgJgtfsRFw7qqneAACBAEAAladvQreBNF6Zmb3bDYE CAACAgIAAxkBAAEVrW1naWZID5jRvKJgWgkwhtR65XRF_QAC6AoAAu6g8Ui8gw9lugYjxTYE")
 lazystickerr = sticker_set.split()
-lazysticker = random.choice(lazystickerr)
+#lazysticker = random.choice(lazystickerr)
 
 def extract_short_url(url):
     """
@@ -192,7 +192,7 @@ async def download_from_terabox(client, message, url, platform):
                 await got_stick.delete()
                 
                 
-                download_stick = await message.reply_sticker(lazysticker)
+                download_stick = await message.reply_sticker(random.choice(lazystickerr))
                 #======================================
                 bot_username = client.username if client.username else "👩‍💻ᴘᴏᴡᴇʀᴇᴅ ʙʏ ʟᴀᴢʏᴅᴇᴠᴇʟᴏᴘᴇʀ"
                 caption_lazy = f"ᴡɪᴛʜ❤@{bot_username}"
@@ -259,7 +259,7 @@ async def download_from_terabox(client, message, url, platform):
                 await asyncio.sleep(1)
                 await sticker_message.delete()
 
-                final_stick = await message.reply_sticker(lazysticker)
+                final_stick = await message.reply_sticker(random.choice(lazystickerr))
                 if os.path.exists(video_filename):
                     os.remove(video_filename)
                 if os.path.exists(ph_path):
