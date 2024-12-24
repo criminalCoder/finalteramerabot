@@ -40,7 +40,7 @@ def extract_short_url(url):
         return path_parts[1]
     return None
 
-async def new_progress_for_pyrogram(current, total, message, start_time):
+async def new_progress_for_pyrogram(current, total, message, start_time, video_title):
     now = time.time()
     diff = now - start_time
     if round(diff % 10.00) == 0 or current == total:
@@ -63,7 +63,7 @@ async def new_progress_for_pyrogram(current, total, message, start_time):
 
 import aiohttp
 
-async def download_file(url, dest_path, current_size, file_size, start_time, progress_message2, filename):
+async def download_file(url, dest_path, current_size, file_size, start_time, progress_message2, video_title):
     chunk_size = 5 * 1024 * 1024  # 1 MB
     if isinstance(file_size, str):
         file_size = int(file_size)
@@ -77,7 +77,7 @@ async def download_file(url, dest_path, current_size, file_size, start_time, pro
                     if isinstance(current_size, str):
                         current_size = int(current_size)
 
-                    await progress_for_pyrogram(current_size, file_size, "<blockquote>♻ ᴜᴘʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ ᴛᴏ sᴇʀᴠᴇʀ</blockquote>\n<blockquote><code>{filename}</code></blockquote>", progress_message2, start_time)
+                    await progress_for_pyrogram(current_size, file_size, f"<blockquote>♻ ᴜᴘʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ ᴛᴏ sᴇʀᴠᴇʀ</blockquote>\n<blockquote><code>{video_title}</code></blockquote>", progress_message2, start_time)
 
 
 
