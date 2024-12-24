@@ -64,12 +64,18 @@ import aiohttp
 
 async def download_file(url, dest_path, current_size, file_size, start_time, progress_message2, filename):
     chunk_size = 5 * 1024 * 1024  # 1 MB
+    if isinstance(file_size, str):
+        file_size = int(file_size)
+        
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             with open(dest_path, 'wb') as file:
                 while chunk := await response.content.read(chunk_size):
                     file.write(chunk)
                     current_size += len(chunk)
+                    if isinstance(current_size, str):
+                        current_size = int(current_size)
+
                     await progress_for_pyrogram(current_size, file_size, "<blockquote>♻ ᴜᴘʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ ᴛᴏ sᴇʀᴠᴇʀ</blockquote>\n<blockquote><code>{filename}</code></blockquote>", progress_message2, start_time)
 
 
